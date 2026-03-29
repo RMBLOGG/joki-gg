@@ -16,16 +16,11 @@ def admin_required(f):
 @admin_bp.route('/dashboard')
 @admin_required
 def dashboard():
-    # Stats
     total_orders = supabase.table('orders').select('id', count='exact').execute()
-    pending_payments = supabase.table('orders').select('*', count='exact').eq('status', 'pending_verification').execute()
-    pending_withdrawals = supabase.table('withdrawals').select('*', count='exact').eq('status', 'pending').execute()
+    pending_payments = supabase.table('orders').select('id', count='exact').eq('status', 'pending_verification').execute()
+    pending_withdrawals = supabase.table('withdrawals').select('id', count='exact').eq('status', 'pending').execute()
     total_users = supabase.table('profiles').select('id', count='exact').execute()
-    
-    # Recent orders
-    recent_orders = supabase.table('orders').select('*, profiles!orders_buyer_id_fkey(username), services(title)').order('created_at', desc=True).limit(10).execute()
-    
-    # Revenue
+    recent_orders = supabase.table('orders').select('*').order('created_at', desc=True).limit(10).execute()
     completed = supabase.table('orders').select('commission').eq('status', 'completed').execute()
     revenue = sum(o['commission'] for o in (completed.data or []))
 
@@ -41,7 +36,7 @@ def dashboard():
 @admin_bp.route('/payments')
 @admin_required
 def payments():
-    orders = supabase.table('orders').select('*, profiles!orders_buyer_id_fkey(username, email), services(title), profiles!orders_joki_id_fkey(username)').eq('status', 'pending_verification').order('created_at', desc=True).execute()
+    orders = supabase.table('orders').select('*').eq('status', 'pending_verification').order('created_at', desc=True).execute()
     return render_template('admin/payments.html', orders=orders.data or [])
 
 @admin_bp.route('/payment/<int:order_id>/approve', methods=['POST'])
@@ -62,7 +57,7 @@ def reject_payment(order_id):
 @admin_bp.route('/withdrawals')
 @admin_required
 def withdrawals():
-    wds = supabase.table('withdrawals').select('*, profiles(username, email)').eq('status', 'pending').order('created_at', desc=True).execute()
+    wds = supabase.table('withdrawals').select('*').eq('status', 'pending').order('created_at', desc=True).execute()
     return render_template('admin/withdrawals.html', withdrawals=wds.data or [])
 
 @admin_bp.route('/withdrawal/<int:wd_id>/approve', methods=['POST'])
@@ -72,8 +67,6 @@ def approve_withdrawal(wd_id):
     if wd.data:
         joki_id = wd.data['joki_id']
         amount = wd.data['amount']
-        
-        # Deduct balance
         profile = supabase.table('profiles').select('balance').eq('id', joki_id).single().execute()
         new_balance = max(0, (profile.data.get('balance', 0) or 0) - amount)
         supabase.table('profiles').update({'balance': new_balance}).eq('id', joki_id).execute()
@@ -105,7 +98,7 @@ def verify_joki(joki_id):
 @admin_required
 def all_orders():
     status = request.args.get('status', '')
-    query = supabase.table('orders').select('*, profiles!orders_buyer_id_fkey(username), profiles!orders_joki_id_fkey(username), services(title)')
+    query = supabase.table('orders').select('*')
     if status:
         query = query.eq('status', status)
     orders = query.order('created_at', desc=True).execute()

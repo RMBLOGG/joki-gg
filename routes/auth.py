@@ -48,7 +48,7 @@ def register():
         email = request.form['email']
         password = request.form['password']
         username = request.form['username']
-        role = request.form.get('role', 'buyer')
+        role = request.form.get('role', 'joki')
 
         try:
             res = supabase.auth.sign_up({"email": email, "password": password})

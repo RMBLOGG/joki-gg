@@ -3,18 +3,31 @@ from supabase_client import supabase
 
 auth_bp = Blueprint('auth', __name__)
 
+ADMIN_EMAIL = "ramdanbmxflat008@gmail.com"
+ADMIN_PASSWORD = "RMBLOGG"
+
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
+
+        # Hardcode admin
+        if email == ADMIN_EMAIL and password == ADMIN_PASSWORD:
+            session['user_id'] = 'admin-hardcode'
+            session['email'] = email
+            session['role'] = 'admin'
+            session['username'] = 'Admin'
+            session['balance'] = 0
+            flash('Login berhasil!', 'success')
+            return redirect(url_for('admin.dashboard'))
+
         try:
             res = supabase.auth.sign_in_with_password({"email": email, "password": password})
             user = res.user
             session['user_id'] = user.id
             session['email'] = user.email
 
-            # Get profile
             profile = supabase.table('profiles').select('*').eq('id', user.id).single().execute()
             if profile.data:
                 session['role'] = profile.data.get('role', 'buyer')
@@ -35,7 +48,7 @@ def register():
         email = request.form['email']
         password = request.form['password']
         username = request.form['username']
-        role = request.form.get('role', 'buyer')  # buyer atau joki
+        role = request.form.get('role', 'buyer')
 
         try:
             res = supabase.auth.sign_up({"email": email, "password": password})

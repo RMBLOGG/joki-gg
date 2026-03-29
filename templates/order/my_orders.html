@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}My Orders - JokiGG{% endblock %}
+{% block content %}
+<div class="container page-content">
+    <h1 style="font-family:'Orbitron',sans-serif;font-size:1.4rem;margin-bottom:24px">
+        {% if role == 'joki' %}Order <span style="color:var(--primary)">Masuk</span>{% else %}Order <span style="color:var(--primary)">Saya</span>{% endif %}
+    </h1>
+
+    {% if orders %}
+    <div style="display:flex;flex-direction:column;gap:12px">
+        {% for o in orders %}
+        <a href="{{ url_for('order.order_detail', order_id=o.id) }}" style="text-decoration:none">
+        <div class="card" style="display:flex;align-items:center;gap:16px;cursor:pointer">
+            <div style="flex:1">
+                <div style="font-weight:700;margin-bottom:4px">{{ o.services.title }}</div>
+                <div style="color:var(--text-muted);font-size:0.85rem">
+                    {{ o.services.game_name }} ·
+                    {% if role == 'joki' %}Buyer: {{ o.profiles.username }}{% else %}Joki: {{ o.profiles.username }}{% endif %}
+                </div>
+            </div>
+            <div style="text-align:right">
+                <div style="font-family:'Orbitron',sans-serif;color:var(--primary);font-weight:700">Rp {{ "{:,.0f}".format(o.price) }}</div>
+                <div style="margin-top:6px">
+                    {% if o.status == 'pending_payment' %}<span class="badge badge-warning">Menunggu Bayar</span>
+                    {% elif o.status == 'pending_verification' %}<span class="badge badge-info">Verifikasi</span>
+                    {% elif o.status == 'active' %}<span class="badge badge-success">Aktif</span>
+                    {% elif o.status == 'in_progress' %}<span class="badge badge-info">Dikerjakan</span>
+                    {% elif o.status == 'waiting_confirmation' %}<span class="badge badge-warning">Konfirmasi</span>
+                    {% elif o.status == 'completed' %}<span class="badge badge-success">Selesai</span>
+                    {% elif o.status == 'payment_rejected' %}<span class="badge badge-danger">Ditolak</span>
+                    {% else %}<span class="badge badge-warning">{{ o.status }}</span>{% endif %}
+                </div>
+            </div>
+            <i class="fas fa-chevron-right" style="color:var(--text-muted)"></i>
+        </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:80px;color:var(--text-muted)">
+        <i class="fas fa-inbox" style="font-size:3rem;opacity:0.3;margin-bottom:16px"></i>
+        <p>Belum ada order.</p>
+        {% if role == 'buyer' %}
+        <a href="{{ url_for('main.browse') }}" class="btn btn-primary" style="margin-top:16px">Cari Layanan</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

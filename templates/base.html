@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}JokiGG - Marketplace Joki Game #1 Indonesia{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00ff88;
+            --primary-dim: #00cc6a;
+            --accent: #ff3d6e;
+            --bg: #080b12;
+            --bg2: #0d1117;
+            --bg3: #131a24;
+            --border: rgba(0,255,136,0.15);
+            --text: #e8eef5;
+            --text-muted: #6b7a90;
+            --glow: 0 0 20px rgba(0,255,136,0.3);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            background-image: radial-gradient(ellipse at 20% 0%, rgba(0,255,136,0.04) 0%, transparent 60%),
+                              radial-gradient(ellipse at 80% 100%, rgba(255,61,110,0.04) 0%, transparent 60%);
+        }
+        /* NAVBAR */
+        nav {
+            background: rgba(8,11,18,0.95);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            position: sticky; top: 0; z-index: 100;
+            padding: 0 24px;
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+            height: 64px;
+        }
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem; font-weight: 900;
+            color: var(--primary);
+            text-decoration: none;
+            text-shadow: var(--glow);
+            letter-spacing: 2px;
+        }
+        .logo span { color: var(--accent); }
+        .nav-links { display: flex; align-items: center; gap: 8px; }
+        .nav-links a {
+            color: var(--text-muted); text-decoration: none;
+            padding: 8px 14px; border-radius: 6px;
+            font-weight: 600; font-size: 0.9rem; letter-spacing: 0.5px;
+            transition: all 0.2s;
+        }
+        .nav-links a:hover { color: var(--primary); background: rgba(0,255,136,0.06); }
+        .btn-nav {
+            background: var(--primary); color: #000 !important;
+            font-weight: 700 !important; padding: 8px 18px !important;
+            border-radius: 6px;
+        }
+        .btn-nav:hover { background: var(--primary-dim) !important; }
+        .nav-user { display: flex; align-items: center; gap: 12px; }
+        .balance-badge {
+            background: rgba(0,255,136,0.1); border: 1px solid var(--border);
+            color: var(--primary); padding: 6px 12px; border-radius: 6px;
+            font-size: 0.85rem; font-weight: 700;
+        }
+
+        /* FLASH MESSAGES */
+        .flash-container { max-width: 1200px; margin: 16px auto; padding: 0 24px; }
+        .flash { padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; font-weight: 600; }
+        .flash.success { background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.3); color: var(--primary); }
+        .flash.error { background: rgba(255,61,110,0.1); border: 1px solid rgba(255,61,110,0.3); color: var(--accent); }
+
+        /* CONTAINER */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .page-content { padding: 32px 0; }
+
+        /* BUTTONS */
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 20px; border-radius: 8px; font-family: 'Rajdhani', sans-serif;
+            font-weight: 700; font-size: 0.95rem; cursor: pointer;
+            border: none; text-decoration: none; transition: all 0.2s; letter-spacing: 0.5px;
+        }
+        .btn-primary { background: var(--primary); color: #000; }
+        .btn-primary:hover { background: var(--primary-dim); transform: translateY(-1px); box-shadow: var(--glow); }
+        .btn-outline { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+        .btn-outline:hover { background: rgba(0,255,136,0.08); }
+        .btn-danger { background: var(--accent); color: #fff; }
+        .btn-danger:hover { background: #cc2d55; }
+        .btn-sm { padding: 6px 14px; font-size: 0.85rem; }
+
+        /* CARDS */
+        .card {
+            background: var(--bg3); border: 1px solid var(--border);
+            border-radius: 12px; padding: 20px; transition: all 0.2s;
+        }
+        .card:hover { border-color: rgba(0,255,136,0.3); transform: translateY(-2px); }
+
+        /* FORMS */
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; color: var(--text-muted); font-size: 0.9rem; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; background: var(--bg2); border: 1px solid var(--border);
+            color: var(--text); padding: 10px 14px; border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif; font-size: 0.95rem; transition: border 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0,255,136,0.08);
+        }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+
+        /* BADGES */
+        .badge { padding: 3px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.5px; }
+        .badge-success { background: rgba(0,255,136,0.15); color: var(--primary); }
+        .badge-warning { background: rgba(255,180,0,0.15); color: #ffb400; }
+        .badge-danger { background: rgba(255,61,110,0.15); color: var(--accent); }
+        .badge-info { background: rgba(0,150,255,0.15); color: #0096ff; }
+
+        /* STARS */
+        .stars { color: #ffb400; font-size: 0.9rem; }
+
+        /* GRID */
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px; }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid var(--border); margin-top: 60px;
+            padding: 30px 24px; text-align: center;
+            color: var(--text-muted); font-size: 0.85rem;
+        }
+        footer a { color: var(--primary); text-decoration: none; }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        /* MOBILE */
+        @media (max-width: 768px) {
+            .nav-links .hide-mobile { display: none; }
+            .grid-3, .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+<nav>
+    <div class="nav-inner">
+        <a href="{{ url_for('main.index') }}" class="logo">Joki<span>GG</span></a>
+        <div class="nav-links">
+            <a href="{{ url_for('main.browse') }}" class="hide-mobile"><i class="fas fa-gamepad"></i> Browse</a>
+            {% if session.get('user_id') %}
+                {% if session.get('role') == 'admin' %}
+                    <a href="{{ url_for('admin.dashboard') }}"><i class="fas fa-shield-alt"></i> Admin</a>
+                {% elif session.get('role') == 'joki' %}
+                    <a href="{{ url_for('joki.dashboard') }}"><i class="fas fa-bolt"></i> Dashboard</a>
+                {% endif %}
+                <a href="{{ url_for('order.my_orders') }}" class="hide-mobile"><i class="fas fa-list"></i> Orders</a>
+                <div class="nav-user">
+                    {% if session.get('role') == 'joki' %}
+                    <span class="balance-badge"><i class="fas fa-wallet"></i> Rp {{ "{:,.0f}".format(session.get('balance', 0) or 0) }}</span>
+                    {% endif %}
+                    <span style="color: var(--text-muted); font-size:0.9rem">{{ session.get('username', '') }}</span>
+                    <a href="{{ url_for('auth.logout') }}" class="btn-nav btn" style="padding:7px 14px!important"><i class="fas fa-sign-out-alt"></i></a>
+                </div>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">Login</a>
+                <a href="{{ url_for('auth.register') }}" class="btn-nav">Daftar</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flash-container">
+    {% for category, message in messages %}
+    <div class="flash {{ category }}"><i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i> {{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+{% block content %}{% endblock %}
+
+<footer>
+    <p>&copy; 2024 <strong style="color:var(--primary)">JokiGG</strong> — Marketplace Joki Game #1 Indonesia</p>
+    <p style="margin-top:8px"><a href="#">Syarat & Ketentuan</a> · <a href="#">Privasi</a> · <a href="#">Bantuan</a></p>
+</footer>
+</body>
+</html>

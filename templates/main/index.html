@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+{% block title %}JokiGG - Marketplace Joki Game #1 Indonesia{% endblock %}
+{% block extra_css %}
+<style>
+.hero {
+    padding: 80px 24px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.hero::before {
+    content: '';
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(0,255,136,0.08) 0%, transparent 70%);
+    pointer-events: none;
+}
+.hero-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,255,136,0.08); border: 1px solid var(--border);
+    padding: 6px 16px; border-radius: 20px; margin-bottom: 24px;
+    font-size: 0.85rem; color: var(--primary); font-weight: 700; letter-spacing: 1px;
+}
+.hero h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900; line-height: 1.1; margin-bottom: 20px;
+}
+.hero h1 span { color: var(--primary); text-shadow: var(--glow); }
+.hero p { font-size: 1.1rem; color: var(--text-muted); max-width: 500px; margin: 0 auto 36px; }
+.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.stats-bar {
+    max-width: 800px; margin: 50px auto 0;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; background: var(--border); border-radius: 12px; overflow: hidden;
+}
+.stat { background: var(--bg3); padding: 20px; text-align: center; }
+.stat-num { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 900; color: var(--primary); }
+.stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; font-weight: 600; }
+
+.section { padding: 48px 24px; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+.section-title { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: 700; }
+.section-title span { color: var(--primary); }
+
+/* GAME CATEGORY PILLS */
+.category-pills { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.pill {
+    background: var(--bg3); border: 1px solid var(--border);
+    padding: 8px 16px; border-radius: 20px; cursor: pointer;
+    font-weight: 600; font-size: 0.85rem; text-decoration: none; color: var(--text-muted);
+    transition: all 0.2s;
+}
+.pill:hover, .pill.active { background: rgba(0,255,136,0.1); border-color: var(--primary); color: var(--primary); }
+
+/* SERVICE CARD */
+.service-card {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; transition: all 0.25s; text-decoration: none; color: inherit;
+    display: flex; flex-direction: column;
+}
+.service-card:hover { border-color: rgba(0,255,136,0.4); transform: translateY(-4px); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+.service-thumb {
+    height: 140px; background: linear-gradient(135deg, #0d1117 0%, #131a24 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem; position: relative; overflow: hidden;
+}
+.service-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.service-game-tag {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+    padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;
+    color: var(--primary); border: 1px solid var(--border);
+}
+.service-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+.service-title { font-weight: 700; font-size: 1rem; margin-bottom: 6px; line-height: 1.3; }
+.service-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.service-joki { font-size: 0.82rem; color: var(--text-muted); }
+.service-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border); }
+.service-price { font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 700; color: var(--primary); }
+.service-price small { font-size: 0.7rem; color: var(--text-muted); font-family: 'Rajdhani', sans-serif; }
+
+/* TOP JOKI */
+.joki-card {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+    display: flex; align-items: center; gap: 16px;
+    text-decoration: none; color: inherit; transition: all 0.2s;
+}
+.joki-card:hover { border-color: rgba(0,255,136,0.3); }
+.avatar {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; font-weight: 900; color: #000; flex-shrink: 0;
+    overflow: hidden;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.joki-info { flex: 1; }
+.joki-name { font-weight: 700; margin-bottom: 4px; }
+.joki-verified { color: var(--primary); font-size: 0.8rem; }
+
+/* HOW IT WORKS */
+.how-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; }
+.how-step { text-align: center; padding: 28px 16px; }
+.how-icon {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: rgba(0,255,136,0.08); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; margin: 0 auto 16px;
+    color: var(--primary);
+}
+.how-step h3 { font-weight: 700; margin-bottom: 8px; }
+.how-step p { font-size: 0.9rem; color: var(--text-muted); }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-label"><i class="fas fa-bolt"></i> PLATFORM JOKI GAME TERPERCAYA</div>
+    <h1>Raih Rank Impianmu<br>Bersama <span>JokiGG</span></h1>
+    <p>Joki profesional terverifikasi untuk Mobile Legends, PUBG, Valorant, Genshin Impact, dan 20+ game lainnya.</p>
+    <div class="hero-btns">
+        <a href="{{ url_for('main.browse') }}" class="btn btn-primary"><i class="fas fa-gamepad"></i> Cari Joki Sekarang</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-outline"><i class="fas fa-user-plus"></i> Daftar Jadi Joki</a>
+    </div>
+    <div class="stats-bar">
+        <div class="stat"><div class="stat-num">500+</div><div class="stat-label">Joki Aktif</div></div>
+        <div class="stat"><div class="stat-num">10K+</div><div class="stat-label">Order Selesai</div></div>
+        <div class="stat"><div class="stat-num">4.9★</div><div class="stat-label">Rating Rata-rata</div></div>
+    </div>
+</section>
+
+<!-- CATEGORIES -->
+<div class="container">
+    <div class="category-pills">
+        <a href="{{ url_for('main.browse') }}" class="pill active">🎮 Semua Game</a>
+        <a href="{{ url_for('main.browse', game='Mobile Legends') }}" class="pill">⚔️ Mobile Legends</a>
+        <a href="{{ url_for('main.browse', game='PUBG Mobile') }}" class="pill">🔫 PUBG Mobile</a>
+        <a href="{{ url_for('main.browse', game='Valorant') }}" class="pill">🎯 Valorant</a>
+        <a href="{{ url_for('main.browse', game='Genshin Impact') }}" class="pill">🌟 Genshin Impact</a>
+        <a href="{{ url_for('main.browse', game='Free Fire') }}" class="pill">🔥 Free Fire</a>
+        <a href="{{ url_for('main.browse', game='Wuthering Waves') }}" class="pill">🌊 Wuthering Waves</a>
+    </div>
+</div>
+
+<!-- SERVICES -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Layanan <span>Terbaru</span></h2>
+            <a href="{{ url_for('main.browse') }}" class="btn btn-outline btn-sm">Lihat Semua</a>
+        </div>
+        {% if services %}
+        <div class="grid-3">
+            {% for s in services[:9] %}
+            <a href="{{ url_for('main.service_detail', service_id=s.id) }}" class="service-card">
+                <div class="service-thumb">
+                    {% if s.thumbnail_url %}
+                    <img src="{{ s.thumbnail_url }}" alt="{{ s.title }}">
+                    {% else %}
+                    <i class="fas fa-gamepad" style="color:var(--border)"></i>
+                    {% endif %}
+                    <span class="service-game-tag">{{ s.game_name }}</span>
+                </div>
+                <div class="service-body">
+                    <div class="service-title">{{ s.title }}</div>
+                    <div class="service-meta">
+                        <div class="stars">
+                            {% set rating = s.profiles.rating_avg or 0 %}
+                            {% for i in range(5) %}
+                                {% if i < rating|int %}<i class="fas fa-star"></i>{% else %}<i class="far fa-star" style="color:var(--text-muted)"></i>{% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="service-joki">by {{ s.profiles.username }}</span>
+                        {% if s.profiles.is_verified %}<i class="fas fa-check-circle" style="color:var(--primary);font-size:0.8rem" title="Terverifikasi"></i>{% endif %}
+                    </div>
+                    <div class="service-footer">
+                        <div>
+                            <div class="service-price">Rp {{ "{:,.0f}".format(s.price) }}<small>/order</small></div>
+                            <span class="badge badge-info" style="margin-top:4px">{{ s.service_type }}</span>
+                        </div>
+                        <span class="btn btn-primary btn-sm">Pesan</span>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:60px;color:var(--text-muted)">
+            <i class="fas fa-gamepad" style="font-size:3rem;margin-bottom:16px;opacity:0.3"></i>
+            <p>Belum ada layanan. Jadilah joki pertama!</p>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary" style="margin-top:16px">Daftar Jadi Joki</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" style="background:var(--bg2); border-top:1px solid var(--border); border-bottom:1px solid var(--border)">
+    <div class="container">
+        <h2 class="section-title" style="text-align:center;margin-bottom:36px">Cara <span>Kerja</span></h2>
+        <div class="how-grid">
+            <div class="how-step">
+                <div class="how-icon"><i class="fas fa-search"></i></div>
+                <h3>Cari Layanan</h3>
+                <p>Browse ratusan layanan joki dari berbagai game favoritmu</p>
+            </div>
+            <div class="how-step">
+                <div class="how-icon"><i class="fas fa-shopping-cart"></i></div>
+                <h3>Pesan & Bayar</h3>
+                <p>Order mudah, bayar via transfer bank atau e-wallet</p>
+            </div>
+            <div class="how-step">
+                <div class="how-icon"><i class="fas fa-gamepad"></i></div>
+                <h3>Joki Bekerja</h3>
+                <p>Joki profesional segera mengerjakan pesananmu</p>
+            </div>
+            <div class="how-step">
+                <div class="how-icon"><i class="fas fa-trophy"></i></div>
+                <h3>Rank Naik!</h3>
+                <p>Konfirmasi selesai, akun kamu kembali dengan rank baru</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TOP JOKI -->
+{% if top_joki %}
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Top <span>Joki</span></h2>
+        </div>
+        <div class="grid-3">
+            {% for j in top_joki %}
+            <a href="{{ url_for('main.joki_profile', joki_id=j.id) }}" class="joki-card">
+                <div class="avatar">
+                    {% if j.avatar_url %}<img src="{{ j.avatar_url }}">{% else %}{{ j.username[0]|upper }}{% endif %}
+                </div>
+                <div class="joki-info">
+                    <div class="joki-name">{{ j.username }} {% if j.is_verified %}<i class="fas fa-check-circle" style="color:var(--primary);font-size:0.85rem"></i>{% endif %}</div>
+                    <div class="stars" style="font-size:0.8rem">
+                        {% for i in range(5) %}{% if i < (j.rating_avg or 0)|int %}<i class="fas fa-star"></i>{% else %}<i class="far fa-star" style="color:var(--text-muted)"></i>{% endif %}{% endfor %}
+                        <span style="color:var(--text-muted);margin-left:4px">{{ j.rating_avg or '5.0' }}</span>
+                    </div>
+                    <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px">{{ j.total_orders or 0 }} order selesai</div>
+                </div>
+                <i class="fas fa-chevron-right" style="color:var(--text-muted)"></i>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

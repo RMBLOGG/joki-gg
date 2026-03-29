@@ -1,0 +1,4 @@
+flask==3.0.0
+supabase==2.3.4
+cloudinary==1.36.0
+python-dotenv==1.0.0

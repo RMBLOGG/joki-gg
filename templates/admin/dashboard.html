@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard - JokiGG{% endblock %}
+{% block content %}
+<div class="container page-content">
+    <h1 style="font-family:'Orbitron',sans-serif;font-size:1.4rem;margin-bottom:24px">
+        Admin <span style="color:var(--primary)">Dashboard</span>
+    </h1>
+
+    <!-- STATS -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px">
+        <div class="card" style="text-align:center">
+            <div style="font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:900;color:var(--primary)">{{ total_orders }}</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:4px">Total Order</div>
+        </div>
+        <div class="card" style="text-align:center">
+            <a href="{{ url_for('admin.payments') }}" style="text-decoration:none">
+            <div style="font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:900;color:{% if pending_payments > 0 %}var(--accent){% else %}var(--primary){% endif %}">{{ pending_payments }}</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:4px">Bayar Pending</div>
+            </a>
+        </div>
+        <div class="card" style="text-align:center">
+            <a href="{{ url_for('admin.withdrawals') }}" style="text-decoration:none">
+            <div style="font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:900;color:{% if pending_withdrawals > 0 %}#ffb400{% else %}var(--primary){% endif %}">{{ pending_withdrawals }}</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:4px">Withdraw Pending</div>
+            </a>
+        </div>
+        <div class="card" style="text-align:center">
+            <div style="font-family:'Orbitron',sans-serif;font-size:1.5rem;font-weight:900;color:var(--primary)">Rp {{ "{:,.0f}".format(revenue) }}</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:4px">Total Revenue</div>
+        </div>
+        <div class="card" style="text-align:center">
+            <div style="font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:900;color:var(--primary)">{{ total_users }}</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:4px">Total User</div>
+        </div>
+    </div>
+
+    <!-- QUICK LINKS -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px">
+        <a href="{{ url_for('admin.payments') }}" class="btn btn-primary"><i class="fas fa-credit-card"></i> Verifikasi Bayar</a>
+        <a href="{{ url_for('admin.withdrawals') }}" class="btn btn-outline"><i class="fas fa-wallet"></i> Kelola Withdraw</a>
+        <a href="{{ url_for('admin.manage_joki') }}" class="btn btn-outline"><i class="fas fa-user-check"></i> Verifikasi Joki</a>
+        <a href="{{ url_for('admin.all_orders') }}" class="btn btn-outline"><i class="fas fa-list"></i> Semua Order</a>
+    </div>
+
+    <!-- RECENT ORDERS -->
+    <div class="card">
+        <h3 style="font-weight:700;margin-bottom:16px">Order Terbaru</h3>
+        <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:0.9rem">
+            <thead>
+                <tr style="border-bottom:1px solid var(--border)">
+                    <th style="text-align:left;padding:8px;color:var(--text-muted);font-weight:600">ID</th>
+                    <th style="text-align:left;padding:8px;color:var(--text-muted);font-weight:600">Buyer</th>
+                    <th style="text-align:left;padding:8px;color:var(--text-muted);font-weight:600">Layanan</th>
+                    <th style="text-align:left;padding:8px;color:var(--text-muted);font-weight:600">Harga</th>
+                    <th style="text-align:left;padding:8px;color:var(--text-muted);font-weight:600">Status</th>
+                    <th style="text-align:left;padding:8px;color:var(--text-muted);font-weight:600">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for o in recent_orders %}
+                <tr style="border-bottom:1px solid var(--border)">
+                    <td style="padding:10px 8px;font-family:'Orbitron',sans-serif;font-size:0.8rem">#{{ o.id }}</td>
+                    <td style="padding:10px 8px">{{ o.profiles.username }}</td>
+                    <td style="padding:10px 8px">{{ o.services.title[:30] }}{% if o.services.title|length > 30 %}...{% endif %}</td>
+                    <td style="padding:10px 8px;color:var(--primary);font-weight:700">Rp {{ "{:,.0f}".format(o.price) }}</td>
+                    <td style="padding:10px 8px">
+                        {% if o.status == 'pending_verification' %}<span class="badge badge-warning">Verifikasi</span>
+                        {% elif o.status == 'completed' %}<span class="badge badge-success">Selesai</span>
+                        {% elif o.status == 'in_progress' %}<span class="badge badge-info">Proses</span>
+                        {% else %}<span class="badge badge-warning">{{ o.status }}</span>{% endif %}
+                    </td>
+                    <td style="padding:10px 8px">
+                        <a href="{{ url_for('order.order_detail', order_id=o.id) }}" class="btn btn-outline btn-sm">Detail</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

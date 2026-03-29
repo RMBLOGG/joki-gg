@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Withdraw - JokiGG{% endblock %}
+{% block content %}
+<div class="container page-content" style="max-width:500px">
+    <h1 style="font-family:'Orbitron',sans-serif;font-size:1.4rem;margin-bottom:24px">
+        <span style="color:var(--primary)">Withdraw</span> Saldo
+    </h1>
+
+    <div class="card" style="margin-bottom:20px;text-align:center">
+        <div style="color:var(--text-muted);font-size:0.85rem">Saldo Tersedia</div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900;color:var(--primary);margin-top:4px">
+            Rp {{ "{:,.0f}".format(profile.balance or 0) }}
+        </div>
+    </div>
+
+    <div class="card">
+        <form method="POST">
+            <div class="form-group">
+                <label>Jumlah Withdraw (Rp)</label>
+                <input type="number" name="amount" required min="50000" max="{{ profile.balance or 0 }}" placeholder="Min. Rp 50.000">
+            </div>
+            <div class="form-group">
+                <label>Metode</label>
+                <select name="method" required>
+                    <option value="">Pilih Metode</option>
+                    <option>GoPay</option>
+                    <option>OVO</option>
+                    <option>DANA</option>
+                    <option>BCA</option>
+                    <option>BRI</option>
+                    <option>Mandiri</option>
+                    <option>BNI</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Nomor Rekening / Nomor HP</label>
+                <input type="text" name="account_number" required placeholder="Nomor tujuan transfer">
+            </div>
+            <div style="background:rgba(0,255,136,0.05);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:16px;font-size:0.85rem;color:var(--text-muted)">
+                <i class="fas fa-info-circle" style="color:var(--primary)"></i>
+                Withdraw diproses admin dalam 1x24 jam. Minimum withdraw Rp 50.000.
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">
+                <i class="fas fa-paper-plane"></i> Ajukan Withdraw
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

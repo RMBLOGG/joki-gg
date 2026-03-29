@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Tambah Layanan - JokiGG{% endblock %}
+{% block content %}
+<div class="container page-content" style="max-width:600px">
+    <h1 style="font-family:'Orbitron',sans-serif;font-size:1.4rem;margin-bottom:24px">
+        Tambah <span style="color:var(--primary)">Layanan</span>
+    </h1>
+    <div class="card">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Judul Layanan</label>
+                <input type="text" name="title" required placeholder="Contoh: Boost ML Mythic Cepat & Aman">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div class="form-group">
+                    <label>Nama Game</label>
+                    <select name="game_name" required>
+                        <option value="">Pilih Game</option>
+                        <option>Mobile Legends</option>
+                        <option>PUBG Mobile</option>
+                        <option>Valorant</option>
+                        <option>Genshin Impact</option>
+                        <option>Free Fire</option>
+                        <option>Wuthering Waves</option>
+                        <option>Honkai Star Rail</option>
+                        <option>Apex Legends Mobile</option>
+                        <option>League of Legends</option>
+                        <option>Lainnya</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Jenis Layanan</label>
+                    <select name="service_type" required>
+                        <option value="">Pilih Tipe</option>
+                        <option>Rank Boost</option>
+                        <option>Carry Ranked</option>
+                        <option>Account Leveling</option>
+                        <option>Story/Quest Clear</option>
+                        <option>Achievement Hunter</option>
+                        <option>Coaching</option>
+                        <option>Lainnya</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div class="form-group">
+                    <label>Rank Awal (opsional)</label>
+                    <input type="text" name="rank_from" placeholder="Contoh: Epic">
+                </div>
+                <div class="form-group">
+                    <label>Rank Target (opsional)</label>
+                    <input type="text" name="rank_to" placeholder="Contoh: Mythic">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Harga (Rp)</label>
+                <input type="number" name="price" required min="10000" placeholder="50000">
+            </div>
+            <div class="form-group">
+                <label>Deskripsi Layanan</label>
+                <textarea name="description" required placeholder="Jelaskan detail layanan, estimasi waktu, metode, dll..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Thumbnail (opsional)</label>
+                <input type="file" name="thumbnail" accept="image/*">
+            </div>
+            <div style="display:flex;gap:10px">
+                <a href="{{ url_for('joki.dashboard') }}" class="btn btn-outline" style="flex:1;justify-content:center">Batal</a>
+                <button type="submit" class="btn btn-primary" style="flex:2;justify-content:center">
+                    <i class="fas fa-plus"></i> Tambah Layanan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

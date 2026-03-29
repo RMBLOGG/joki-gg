@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Dashboard Joki - JokiGG{% endblock %}
+{% block content %}
+<div class="container page-content">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px">
+        <h1 style="font-family:'Orbitron',sans-serif;font-size:1.4rem">
+            Dashboard <span style="color:var(--primary)">Joki</span>
+        </h1>
+        <a href="{{ url_for('joki.add_service') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Tambah Layanan
+        </a>
+    </div>
+
+    <!-- STATS -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px">
+        <div class="card" style="text-align:center">
+            <div style="font-family:'Orbitron',sans-serif;font-size:1.6rem;font-weight:900;color:var(--primary)">
+                Rp {{ "{:,.0f}".format(profile.balance or 0) }}
+            </div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:4px">Saldo</div>
+            <a href="{{ url_for('joki.withdraw') }}" class="btn btn-outline btn-sm" style="margin-top:10px">Withdraw</a>
+        </div>
+        <div class="card" style="text-align:center">
+            <div style="font-family:'Orbitron',sans-serif;font-size:1.6rem;font-weight:900;color:var(--primary)">
+                Rp {{ "{:,.0f}".format(total_earnings) }}
+            </div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:4px">Total Earned</div>
+        </div>
+        <div class="card" style="text-align:center">
+            <div style="font-family:'Orbitron',sans-serif;font-size:1.6rem;font-weight:900;color:#ffb400">
+                {{ profile.rating_avg or '5.0' }} ★
+            </div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:4px">Rating</div>
+        </div>
+        <div class="card" style="text-align:center">
+            <div style="font-family:'Orbitron',sans-serif;font-size:1.6rem;font-weight:900;color:var(--primary)">
+                {{ profile.total_orders or 0 }}
+            </div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:4px">Order Selesai</div>
+        </div>
+    </div>
+
+    {% if not profile.is_verified %}
+    <div style="background:rgba(255,180,0,0.08);border:1px solid rgba(255,180,0,0.3);border-radius:10px;padding:16px;margin-bottom:24px">
+        <i class="fas fa-clock" style="color:#ffb400"></i>
+        <strong style="color:#ffb400"> Akun kamu sedang menunggu verifikasi admin.</strong>
+        <span style="color:var(--text-muted)"> Kamu belum bisa menerima order sampai diverifikasi.</span>
+    </div>
+    {% endif %}
+
+    <!-- ACTIVE ORDERS -->
+    {% if active_orders or pending_orders %}
+    <div class="card" style="margin-bottom:24px">
+        <h3 style="font-weight:700;margin-bottom:16px"><i class="fas fa-bolt" style="color:var(--primary)"></i> Order Aktif</h3>
+        {% for o in pending_orders %}
+        <div style="border-bottom:1px solid var(--border);padding:12px 0;display:flex;align-items:center;gap:12px">
+            <div style="flex:1">
+                <div style="font-weight:700">{{ o.services.title }}</div>
+                <div style="color:var(--text-muted);font-size:0.85rem">Buyer: {{ o.profiles.username }}</div>
+            </div>
+            <span class="badge badge-success">Baru</span>
+            <a href="{{ url_for('order.order_detail', order_id=o.id) }}" class="btn btn-primary btn-sm">Lihat</a>
+        </div>
+        {% endfor %}
+        {% for o in active_orders %}
+        <div style="border-bottom:1px solid var(--border);padding:12px 0;display:flex;align-items:center;gap:12px">
+            <div style="flex:1">
+                <div style="font-weight:700">{{ o.services.title }}</div>
+                <div style="color:var(--text-muted);font-size:0.85rem">Buyer: {{ o.profiles.username }}</div>
+            </div>
+            <span class="badge badge-info">{{ o.status }}</span>
+            <a href="{{ url_for('order.order_detail', order_id=o.id) }}" class="btn btn-outline btn-sm">Detail</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- SERVICES -->
+    <h2 style="font-family:'Orbitron',sans-serif;font-size:1.1rem;margin-bottom:16px">Layanan <span style="color:var(--primary)">Saya</span></h2>
+    {% if services %}
+    <div class="grid-3">
+        {% for s in services %}
+        <div class="card">
+            {% if s.thumbnail_url %}
+            <img src="{{ s.thumbnail_url }}" style="width:100%;height:120px;object-fit:cover;border-radius:8px;margin-bottom:12px">
+            {% endif %}
+            <div style="font-weight:700;margin-bottom:4px">{{ s.title }}</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-bottom:10px">{{ s.game_name }} · {{ s.service_type }}</div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-family:'Orbitron',sans-serif;color:var(--primary);font-weight:700;font-size:0.9rem">Rp {{ "{:,.0f}".format(s.price) }}</span>
+                <div style="display:flex;gap:6px;align-items:center">
+                    {% if s.is_active %}<span class="badge badge-success">Aktif</span>{% else %}<span class="badge badge-danger">Nonaktif</span>{% endif %}
+                    <a href="{{ url_for('joki.edit_service', service_id=s.id) }}" class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:60px;color:var(--text-muted)">
+        <i class="fas fa-plus-circle" style="font-size:2.5rem;opacity:0.3;margin-bottom:12px"></i>
+        <p>Belum ada layanan. Tambahkan layanan pertamamu!</p>
+        <a href="{{ url_for('joki.add_service') }}" class="btn btn-primary" style="margin-top:16px">Tambah Layanan</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Buat Order - JokiGG{% endblock %}
+{% block content %}
+<div class="container page-content" style="max-width:600px">
+    <h1 style="font-family:'Orbitron',sans-serif;font-size:1.4rem;margin-bottom:24px">Buat <span style="color:var(--primary)">Order</span></h1>
+    
+    <div class="card" style="margin-bottom:20px;display:flex;align-items:center;gap:16px">
+        <div class="avatar" style="width:52px;height:52px">
+            {% if service.profiles.avatar_url %}<img src="{{ service.profiles.avatar_url }}">{% else %}{{ service.profiles.username[0]|upper }}{% endif %}
+        </div>
+        <div style="flex:1">
+            <div style="font-weight:700">{{ service.title }}</div>
+            <div style="color:var(--text-muted);font-size:0.9rem">{{ service.game_name }} · by {{ service.profiles.username }}</div>
+        </div>
+        <div style="font-family:'Orbitron',sans-serif;color:var(--primary);font-weight:700">Rp {{ "{:,.0f}".format(service.price) }}</div>
+    </div>
+
+    <div class="card">
+        <form method="POST">
+            <div class="form-group">
+                <label><i class="fas fa-gamepad"></i> ID/Username Akun Game</label>
+                <input type="text" name="game_account" required placeholder="Contoh: ID 12345678 Server 2408">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-key"></i> Password Akun Game</label>
+                <input type="password" name="game_password" placeholder="Password akun game (opsional untuk carry)">
+                <small style="color:var(--text-muted);font-size:0.8rem;margin-top:4px;display:block">
+                    <i class="fas fa-lock"></i> Data ini dienkripsi dan hanya terlihat oleh joki yang ditunjuk.
+                </small>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-trophy"></i> Target Rank/Request</label>
+                <input type="text" name="rank_target" placeholder="Contoh: Mythic, Global Top 1000, dll">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-sticky-note"></i> Catatan Tambahan</label>
+                <textarea name="notes" placeholder="Info tambahan untuk joki (opsional)"></textarea>
+            </div>
+
+            <div style="background:rgba(0,255,136,0.05);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:20px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                    <span style="color:var(--text-muted)">Harga Layanan</span>
+                    <span style="font-weight:700">Rp {{ "{:,.0f}".format(service.price) }}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:1.1rem;font-weight:700;color:var(--primary)">
+                    <span>Total Bayar</span>
+                    <span>Rp {{ "{:,.0f}".format(service.price) }}</span>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:10px">
+                <a href="{{ url_for('main.service_detail', service_id=service.id) }}" class="btn btn-outline" style="flex:1;justify-content:center">Batal</a>
+                <button type="submit" class="btn btn-primary" style="flex:2;justify-content:center">
+                    <i class="fas fa-bolt"></i> Buat Order & Bayar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

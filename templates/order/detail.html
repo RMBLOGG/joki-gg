@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Detail Order - JokiGG{% endblock %}
+{% block content %}
+<div class="container page-content" style="max-width:700px">
+    {% if order %}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+        <h1 style="font-family:'Orbitron',sans-serif;font-size:1.3rem">Order <span style="color:var(--primary)">#{{ order.id }}</span></h1>
+        {% if order.status == 'pending_payment' %}<span class="badge badge-warning">Menunggu Bayar</span>
+        {% elif order.status == 'pending_verification' %}<span class="badge badge-info">Verifikasi Pembayaran</span>
+        {% elif order.status == 'active' %}<span class="badge badge-success">Aktif - Menunggu Joki</span>
+        {% elif order.status == 'in_progress' %}<span class="badge badge-info">Sedang Dikerjakan</span>
+        {% elif order.status == 'waiting_confirmation' %}<span class="badge badge-warning">Menunggu Konfirmasi</span>
+        {% elif order.status == 'completed' %}<span class="badge badge-success">Selesai</span>
+        {% elif order.status == 'payment_rejected' %}<span class="badge badge-danger">Pembayaran Ditolak</span>
+        {% endif %}
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+        <h3 style="font-weight:700;margin-bottom:14px;color:var(--text-muted);font-size:0.85rem;text-transform:uppercase;letter-spacing:1px">Detail Layanan</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div><div style="color:var(--text-muted);font-size:0.8rem">Layanan</div><div style="font-weight:700">{{ order.services.title }}</div></div>
+            <div><div style="color:var(--text-muted);font-size:0.8rem">Game</div><div style="font-weight:700">{{ order.services.game_name }}</div></div>
+            <div><div style="color:var(--text-muted);font-size:0.8rem">Joki</div><div style="font-weight:700">{{ order.profiles.username }}</div></div>
+            <div><div style="color:var(--text-muted);font-size:0.8rem">Target Rank</div><div style="font-weight:700">{{ order.rank_target or '-' }}</div></div>
+        </div>
+        {% if order.notes %}
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+            <div style="color:var(--text-muted);font-size:0.8rem">Catatan</div>
+            <div>{{ order.notes }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+        <h3 style="font-weight:700;margin-bottom:14px;color:var(--text-muted);font-size:0.85rem;text-transform:uppercase;letter-spacing:1px">Pembayaran</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+                <div style="font-family:'Orbitron',sans-serif;font-size:1.5rem;font-weight:900;color:var(--primary)">Rp {{ "{:,.0f}".format(order.price) }}</div>
+                {% if order.payment_method %}<div style="color:var(--text-muted);font-size:0.85rem;margin-top:4px">via {{ order.payment_method }}</div>{% endif %}
+            </div>
+            {% if order.payment_proof_url %}
+            <a href="{{ order.payment_proof_url }}" target="_blank" class="btn btn-outline btn-sm">
+                <i class="fas fa-image"></i> Lihat Bukti
+            </a>
+            {% endif %}
+        </div>
+        {% if order.status == 'payment_rejected' and order.reject_reason %}
+        <div style="background:rgba(255,61,110,0.1);border:1px solid rgba(255,61,110,0.3);border-radius:8px;padding:12px;margin-top:12px">
+            <i class="fas fa-times-circle" style="color:var(--accent)"></i> <strong>Alasan Penolakan:</strong> {{ order.reject_reason }}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ACTIONS -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+        {% if session.get('role') == 'joki' %}
+            {% if order.status == 'active' %}
+            <form method="POST" action="{{ url_for('joki.accept_order', order_id=order.id) }}">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Terima Order</button>
+            </form>
+            {% elif order.status == 'in_progress' %}
+            <form method="POST" action="{{ url_for('order.complete_order', order_id=order.id) }}">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-flag-checkered"></i> Tandai Selesai</button>
+            </form>
+            {% endif %}
+        {% endif %}
+
+        {% if session.get('role') == 'buyer' %}
+            {% if order.status == 'pending_payment' %}
+            <a href="{{ url_for('order.payment', order_id=order.id) }}" class="btn btn-primary">
+                <i class="fas fa-credit-card"></i> Bayar Sekarang
+            </a>
+            {% elif order.status == 'waiting_confirmation' %}
+            <form method="POST" action="{{ url_for('order.confirm_order', order_id=order.id) }}">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check-double"></i> Konfirmasi Selesai</button>
+            </form>
+            {% elif order.status == 'completed' %}
+            <div class="card" style="width:100%">
+                <h3 style="font-weight:700;margin-bottom:14px"><i class="fas fa-star" style="color:#ffb400"></i> Beri Review</h3>
+                <form method="POST" action="{{ url_for('order.submit_review', order_id=order.id) }}">
+                    <div class="form-group">
+                        <label>Rating</label>
+                        <select name="rating">
+                            <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                            <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                            <option value="3">⭐⭐⭐ (3/5)</option>
+                            <option value="2">⭐⭐ (2/5)</option>
+                            <option value="1">⭐ (1/5)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Komentar</label>
+                        <textarea name="comment" placeholder="Pengalaman kamu..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Kirim Review</button>
+                </form>
+            </div>
+            {% endif %}
+        {% endif %}
+
+        <a href="{{ url_for('order.my_orders') }}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

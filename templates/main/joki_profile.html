@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}{{ profile.username }} - JokiGG{% endblock %}
+{% block content %}
+<div class="container page-content" style="max-width:800px">
+    {% if profile %}
+    <!-- PROFILE HEADER -->
+    <div class="card" style="margin-bottom:24px;display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+        <div class="avatar" style="width:72px;height:72px;font-size:1.8rem;flex-shrink:0">
+            {% if profile.avatar_url %}<img src="{{ profile.avatar_url }}">{% else %}{{ profile.username[0]|upper }}{% endif %}
+        </div>
+        <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                <h1 style="font-size:1.4rem;font-weight:700">{{ profile.username }}</h1>
+                {% if profile.is_verified %}<span class="badge badge-success"><i class="fas fa-check-circle"></i> Terverifikasi</span>{% endif %}
+            </div>
+            <div class="stars" style="margin:6px 0">
+                {% for i in range(5) %}{% if i < (profile.rating_avg or 0)|int %}<i class="fas fa-star"></i>{% else %}<i class="far fa-star" style="color:var(--text-muted)"></i>{% endif %}{% endfor %}
+                <span style="color:var(--text-muted);margin-left:6px">{{ profile.rating_avg or '5.0' }} · {{ profile.total_orders or 0 }} order selesai</span>
+            </div>
+            {% if profile.bio %}<p style="color:var(--text-muted);font-size:0.9rem">{{ profile.bio }}</p>{% endif %}
+        </div>
+    </div>
+
+    <!-- SERVICES -->
+    {% if services %}
+    <h2 style="font-family:'Orbitron',sans-serif;font-size:1.1rem;margin-bottom:16px">Layanan <span style="color:var(--primary)">Tersedia</span></h2>
+    <div class="grid-3" style="margin-bottom:28px">
+        {% for s in services %}
+        <a href="{{ url_for('main.service_detail', service_id=s.id) }}" class="service-card">
+            <div class="service-thumb">
+                {% if s.thumbnail_url %}<img src="{{ s.thumbnail_url }}">{% else %}<i class="fas fa-gamepad" style="color:var(--border)"></i>{% endif %}
+                <span class="service-game-tag">{{ s.game_name }}</span>
+            </div>
+            <div class="service-body">
+                <div class="service-title">{{ s.title }}</div>
+                <div class="service-footer">
+                    <div class="service-price">Rp {{ "{:,.0f}".format(s.price) }}</div>
+                    <span class="btn btn-primary btn-sm">Pesan</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- REVIEWS -->
+    {% if reviews %}
+    <h2 style="font-family:'Orbitron',sans-serif;font-size:1.1rem;margin-bottom:16px">Review <span style="color:var(--primary)">Terbaru</span></h2>
+    <div style="display:flex;flex-direction:column;gap:12px">
+        {% for r in reviews %}
+        <div class="card">
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+                <div class="avatar" style="width:36px;height:36px;font-size:0.9rem">{{ r.profiles.username[0]|upper }}</div>
+                <div>
+                    <div style="font-weight:600;font-size:0.9rem">{{ r.profiles.username }}</div>
+                    <div class="stars" style="font-size:0.8rem">{% for i in range(5) %}{% if i < r.rating %}<i class="fas fa-star"></i>{% else %}<i class="far fa-star" style="color:var(--text-muted)"></i>{% endif %}{% endfor %}</div>
+                </div>
+            </div>
+            <p style="color:var(--text-muted);font-size:0.9rem">{{ r.comment }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
